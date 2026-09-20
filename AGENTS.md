@@ -10,10 +10,8 @@ Wildwood is a static ES2022 browser game. `index.html` maps `three` to the vendo
 - `render/`: procedural atlas, WebGL rendering, chunk mesher, sky cycle, particles and dropped items.
 - `player/`: fixed-step movement, swept collision, voxel DDA.
 - `ui/`: DOM inventory, recipes, HUD, dialogs and guide content.
-- `save/`: browser recovery cache and serialized cloud-save requests.
-- `db/schema.ts`: Drizzle source of truth for worlds and sparse edited chunks.
-- `netlify/functions/world.mts`: anonymous cookie-scoped save endpoint at `/api/world`.
-- `netlify/database/migrations/`: generated migration and snapshot for deployment.
+- `save/`: browser recovery cache using localStorage.
+
 - `vendor/`: pinned Three.js source and license; no runtime CDN request.
 
 ## Conventions
@@ -28,9 +26,7 @@ Transparent blocks share a separate material/pass. The atlas uses 16px tiles plu
 
 ## Persistence and deployment
 
-Browser localStorage is a recovery cache explicitly required by the game specification. Netlify Database provides the platform-backed durable copy. The browser game does not import the backend packages. Cloud saves use an HttpOnly, same-site anonymous cookie; clients cannot choose another save slot. No accounts or login UI are implemented. Localhost runs without cloud requests.
-
-Keep schema and generated migrations synchronized. Use the beta Drizzle packages required by the Netlify adapter. Never apply deployment migrations manually. Netlify serves the repository as static output and bundles the function separately.
+Browser localStorage provides save persistence. The game is a pure static site with no backend dependencies. All save data is stored in browser localStorage. Localhost runs identically to production.
 
 ## Product choices and current verification
 
