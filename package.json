@@ -1,0 +1,13 @@
+{
+  "name": "wildwood-voxel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An infinite, handcrafted-in-code voxel wilderness",
+  "dependencies": {
+    "@netlify/database": "^1.0.0",
+    "@netlify/functions": "^5.1.0",
+    "drizzle-orm": "beta"
+  },
+  "devDependencies": { "drizzle-kit": "beta" }
+}

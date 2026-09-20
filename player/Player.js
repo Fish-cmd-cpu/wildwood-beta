@@ -1,0 +1,28 @@
+import * as THREE from 'three';
+import {B,BLOCKS} from '../world/Blocks.js';
+import {sweep,canStand} from './Physics.js';
+/** Fixed-step first-person locomotion and survival state. */
+export class Player{
+ /** Restore serializable player state, with bounds suitable for a finite height world. */
+ constructor(saved={}){this.position=new THREE.Vector3(...(Array.isArray(saved.position)?saved.position:[8.5,85,26.5]));this.previous=this.position.clone();this.velocity=new THREE.Vector3();this.yaw=Number(saved.yaw)||-.28;this.pitch=Number(saved.pitch)||-.08;this.health=Math.max(0,Math.min(20,saved.health??20));this.hunger=Math.max(0,Math.min(20,saved.hunger??20));this.breath=10;this.creative=!!saved.creative;this.flying=false;this.grounded=false;this.coyote=0;this.jumpBuffer=0;this.fallStart=this.position.y;this.inWater=false;this.underwater=false;this.crouching=false;this.sprinting=false;this.bob=0;this.damageTimer=0;this.hungerTimer=0;this.travel=Number(saved.travel)||0;this.dead=false;this.onDamage=()=>{};}
+ /** Rotate the camera, clamping pitch away from the Euler singularity. */
+ look(dx,dy){this.yaw-=dx;this.pitch=Math.max(-1.54,Math.min(1.54,this.pitch-dy));}
+ /** Resolve one 1/60s physics step. */
+ update(dt,input,world){this.previous.copy(this.position);if(this.dead||!world.isLoaded(this.position.x,this.position.z))return;this.damageTimer=Math.max(0,this.damageTimer-dt);this.coyote=this.grounded ? .12 : Math.max(0,this.coyote-dt);if(input.consume('Space'))this.jumpBuffer=.15;else this.jumpBuffer=Math.max(0,this.jumpBuffer-dt);
+ this.inWater=world.getBlock(this.position.x,this.position.y+.5,this.position.z)===B.WATER;this.underwater=world.getBlock(this.position.x,this.position.y+1.6,this.position.z)===B.WATER;const crouch=input.down('ControlLeft')||input.down('ControlRight');if(crouch)this.crouching=true;else if(canStand(this.position,world))this.crouching=false;
+ let x=Number(input.down('KeyD'))-Number(input.down('KeyA'))+input.moveX,z=Number(input.down('KeyS'))-Number(input.down('KeyW'))+input.moveZ;const length=Math.hypot(x,z);if(length>1){x/=length;z/=length;}this.sprinting=(input.down('ShiftLeft')||input.down('ShiftRight'))&&this.hunger>3&&!this.crouching&&length>.1;const speed=this.flying?9:this.inWater?2.3:this.crouching?1.7:this.sprinting?5.6:4.3;const sx=Math.cos(this.yaw)*x+Math.sin(this.yaw)*z,sz=-Math.sin(this.yaw)*x+Math.cos(this.yaw)*z,accel=this.grounded||this.inWater||this.flying?14:4.5;this.velocity.x+=(sx*speed-this.velocity.x)*Math.min(1,dt*accel);this.velocity.z+=(sz*speed-this.velocity.z)*Math.min(1,dt*accel);
+ if(this.flying){this.velocity.y=(Number(input.down('Space'))-Number(crouch))*speed;this.fallStart=this.position.y;}else if(this.inWater){this.velocity.y=Math.max(-3,this.velocity.y-5*dt);if(input.down('Space'))this.velocity.y=Math.min(4,this.velocity.y+16*dt);this.fallStart=this.position.y;}else{this.velocity.y=Math.max(-50,this.velocity.y-32*dt);if(this.jumpBuffer>0&&this.coyote>0){this.velocity.y=Math.sqrt(2*32*1.25);this.coyote=0;this.jumpBuffer=0;this.grounded=false;}}
+ if(this.crouching&&this.grounded&&!this.flying){for(const axis of['x','z']){const next=this.position.clone();next[axis]+=this.velocity[axis]*dt+.32*Math.sign(this.velocity[axis]);if(!BLOCKS[world.getBlock(next.x,next.y-.2,next.z)].solid)this.velocity[axis]=0;}}
+ this.fallStart=Math.max(this.fallStart,this.position.y);const oldY=this.position.y;const result=sweep(this.position,this.velocity,dt,world,this.crouching?1.5:1.8);this.grounded=result.grounded;if(this.grounded){const fallen=this.fallStart-this.position.y;if(fallen>3&&!this.inWater&&!this.flying)this.damage(Math.floor(fallen-3));this.fallStart=this.position.y;}if(this.velocity.y>0&&oldY<this.position.y)this.fallStart=this.position.y;
+ const traveled=Math.hypot(this.position.x-this.previous.x,this.position.z-this.previous.z);this.travel+=traveled;if(this.grounded)this.bob+=traveled*2.9;
+ if(!this.creative){this.hungerTimer+=dt*(this.sprinting?1.8:1);if(this.hungerTimer>75){this.hunger=Math.max(0,this.hunger-1);this.hungerTimer=0;}if(this.underwater){this.breath=Math.max(0,this.breath-dt);if(this.breath===0)this.damage(2);}else this.breath=Math.min(10,this.breath+dt*3);if(this.hunger===0)this.damage(1);if(this.hunger>=15&&this.health<20&&this.damageTimer===0){this.health=Math.min(20,this.health+dt*.1);}}else this.breath=10;
+ if(this.position.y<-12)this.damage(20);}
+ /** Apply invulnerability frames and notify the UI. */
+ damage(amount){if(this.creative||this.damageTimer>0||amount<=0)return;this.health=Math.max(0,this.health-amount);this.damageTimer=1.5;this.onDamage(amount);if(this.health<=0)this.dead=true;}
+ /** Interpolate render pose independently of the fixed physics frequency. */
+ pose(camera,alpha,dt,fov){camera.position.lerpVectors(this.previous,this.position,alpha);const moving=this.velocity.x**2+this.velocity.z**2>.3;camera.position.y+=(this.crouching?1.34:1.62)+(this.grounded&&moving?Math.sin(this.bob*2)*.035:0);camera.rotation.set(this.pitch,this.yaw,0,'YXZ');const target=fov+(this.sprinting?5:0);camera.fov+=(target-camera.fov)*Math.min(1,dt*8);camera.updateProjectionMatrix();}
+ /** Restore survival meters at a safe, loaded spawn. */
+ respawn(x,y,z){this.position.set(x,y,z);this.previous.copy(this.position);this.velocity.set(0,0,0);this.health=20;this.hunger=20;this.breath=10;this.fallStart=y;this.dead=false;this.damageTimer=3;}
+ /** Return only persistent player values. */
+ serialize(){return{position:this.position.toArray(),yaw:this.yaw,pitch:this.pitch,health:this.health,hunger:this.hunger,creative:this.creative,travel:this.travel};}
+}

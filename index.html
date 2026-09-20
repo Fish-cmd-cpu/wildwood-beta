@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f4eb">
+  <title>Wildwood — A little world. Endless possibility.</title>
+  <meta name="description" content="Find your own path in Wildwood, an infinite voxel wilderness. Explore, gather, craft, and build a place to call your own.">
+  <meta name="siteName" content="Wildwood">
+  <meta name="siteDescription" content="An endless wilderness. A world of your own. Explore, craft, and build in this playful browser voxel sandbox.">
+  <meta property="og:title" content="Wildwood — A world of your own">
+  <meta property="og:description" content="Explore an endless voxel wilderness. Gather, craft, and build something that feels like home.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='%23547148' d='M20 2 37 12 20 22 3 12z'/%3E%3Cpath fill='%232c493a' d='m3 12 17 10v18L3 30z'/%3E%3Cpath fill='%237a9460' d='m20 22 17-10v18L20 40z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v15M3 4c3-1 6-1 9 1 3-2 6-2 9-1v15c-3-1-6-1-9 1-3-2-6-2-9-1z"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5zM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 3C7 2 2 7 5 15c8 5 16 0 15-12ZM4 21 16 8"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4m0-15.6-1.4 1.4M5.6 18.4l-1.4 1.4"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m16 8-3 5-5 3 3-5z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21 3 12C-3 4 6-1 12 6c6-7 15-2 9 6z"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><path d="m3 21 6-6m2-12c4-3 12 4 10 8-3 5-10 7-13 3-4-3-1-8 3-11Z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2C8 8 4 12 4 16a8 8 0 0 0 16 0c0-4-4-8-8-14Z"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h1m4 0h1m4 0h1M6 13h1m4 0h1m4 0h1M7 16h10"/></symbol>
+    <symbol id="i-mountain" viewBox="0 0 24 24"><path d="m2 20 7-13 4 7 3-11 7 17ZM7 11l2 2 2-2m3-2 2 2 2-2"/></symbol>
+  </defs></svg>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Wildwood home"><span class="brand-mark"><svg viewBox="0 0 32 36" aria-hidden="true"><path fill="#788d58" d="m16 0 16 9-16 9L0 9z"/><path fill="#355442" d="m0 9 16 9v18L0 27z"/><path fill="#54704b" d="m16 18 16-9v18l-16 9z"/></svg></span><span>wildwood<span class="brand-dot">.</span></span></a>
+    <nav aria-label="Main navigation"><button id="nav-play" class="nav-link active">The world <span class="live-dot"></span></button><button id="nav-guide" class="nav-link">Field guide <svg class="icon"><use href="#i-book"/></svg></button></nav>
+    <div class="top-actions"><span class="edition">A LITTLE ESCAPE, ANYTIME.</span><button id="sound-toggle" class="icon-button" title="Toggle sound" aria-label="Toggle sound" aria-pressed="true"><svg class="icon"><use href="#i-sound"/></svg></button><span class="divider"></span><button id="settings-button" class="icon-button" title="Settings" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg></button></div>
+  </header>
+  <main id="game" aria-label="Wildwood game">
+    <div id="scene"></div>
+    <div class="world-shade" aria-hidden="true"></div>
+    <div id="underwater" aria-hidden="true"></div><div id="damage-flash" aria-hidden="true"></div>
+    <div class="world-heading"><span class="world-tag"><span class="live-dot"></span> YOUR OWN LITTLE CORNER</span><span id="world-seed-label">WORLD / WILDWOOD</span></div>
+    <div class="environment"><div class="biome-icon"><svg class="icon"><use href="#i-leaf"/></svg></div><div><span class="eyebrow">SOMEWHERE GOOD</span><strong id="biome-name">Oak forest</strong></div><span class="environment-divider"></span><svg class="icon sun-icon"><use href="#i-sun"/></svg><span id="time-label">Daylight</span></div>
+    <section id="welcome" class="welcome-card" aria-labelledby="welcome-title">
+      <div class="welcome-top"><span class="eyebrow">NO MAP. NO LIMITS. JUST YOU.</span><svg class="icon"><use href="#i-compass"/></svg></div>
+      <h1 id="welcome-title">A little world.<br>Endless <em>possibility.</em></h1>
+      <p>Wander a little. Build something.<br>Make this corner of the world your own.</p>
+      <div class="mode-choices" role="group" aria-label="Choose game mode"><button class="mode-option selected" data-mode="survival"><svg class="icon"><use href="#i-leaf"/></svg>Survival</button><button class="mode-option" data-mode="creative"><svg class="icon"><use href="#i-cube"/></svg>Creative</button></div>
+      <p class="mode-description" id="mode-description">Gather, craft, and find your footing.</p>
+      <button id="enter-world" class="primary-button" disabled><span id="enter-label">Growing your world…</span><svg class="icon"><use href="#i-arrow"/></svg></button>
+      <div id="loading-progress" class="loading-progress"><span></span></div>
+      <div class="welcome-foot"><span><span class="status-dot"></span> <span id="welcome-save-note">Your adventure saves as you go</span></span><span class="tiny-cube">∞</span></div>
+    </section>
+    <div id="vista-note" class="vista-note"><span class="small-rule"></span><span>A fresh start.<br><strong>As far as the eye can see.</strong></span></div>
+    <div id="crosshair" class="crosshair" hidden><span></span><span></span></div>
+    <div id="mining-progress" hidden><span></span></div>
+    <div id="target-label" class="target-label" hidden></div>
+    <section id="journey-card" class="journey-card" hidden><span class="eyebrow">A SMALL BEGINNING</span><button id="journey-dismiss" aria-label="Hide journey tips">×</button><strong id="journey-title">Get to know the woods</strong><p id="journey-detail">Hold left click to gather your first oak log.</p><div class="journey-dots"><i class="current"></i><i></i><i></i><i></i></div></section>
+    <div class="game-bottom" id="game-bottom"><div id="survival-bars" class="survival-bars"><div id="health-bar" class="vital" aria-label="Health"></div><span class="vital-divider"></span><div id="hunger-bar" class="vital hunger" aria-label="Hunger"></div></div><div id="breath-bar" hidden></div><div id="selected-name" class="selected-name">Oak log</div><div class="hotbar-wrap"><div class="hotbar-cap"><svg class="icon"><use href="#i-cube"/></svg></div><div id="hotbar" class="hotbar" aria-label="Hotbar"></div><button id="inventory-button" class="hotbar-inventory" title="Open inventory (E)" aria-label="Open inventory"><span class="grid-icon">▦</span><kbd>E</kbd></button></div><div class="quick-controls"><span><kbd>W A S D</kbd> move</span><span><kbd>SPACE</kbd> jump</span><span><svg class="mouse-icon" viewBox="0 0 14 18"><rect x="2" y="1" width="10" height="16" rx="5"/><path d="M7 1v7H2m5 0h5"/></svg> break / place</span><span><kbd>E</kbd> inventory</span></div></div>
+    <div class="world-corner"><svg class="icon"><use href="#i-compass"/></svg><span>GO WHERE YOU WONDER.</span></div>
+    <button id="help-button" class="help-button" aria-label="Open controls and field guide">?</button>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <pre id="debug" hidden></pre>
+    <div id="touch-controls"><div id="touch-stick"><span></span></div><button id="touch-jump" aria-label="Jump">↑</button><button id="touch-inventory" aria-label="Inventory">▦</button></div>
+  </main>
+  <footer class="statusbar"><span><span class="status-dot"></span><span id="save-status">A world of your own</span></span><span class="status-center">EXPLORE. CREATE. STAY A WHILE.</span><span><span id="mode-status">SURVIVAL</span><span class="footer-divider">/</span><span id="coordinate-status">EST. TODAY</span><span class="version">v1.0</span></span></footer>
+  <div id="modal-layer" class="modal-layer" hidden>
+    <section id="pause-modal" class="modal panel" hidden aria-label="Pause and settings"><div class="modal-header"><div><span class="eyebrow">TAKE YOUR TIME</span><h2>A moment of quiet.</h2></div><button class="close-modal icon-button" aria-label="Close"><svg class="icon"><use href="#i-close"/></svg></button></div><p class="modal-intro">Your world is right where you left it.</p><button id="resume-button" class="primary-button">Back to the wilderness <svg class="icon"><use href="#i-arrow"/></svg></button><div class="settings-list"><label>Look sensitivity <output id="sensitivity-value">65%</output><input id="sensitivity" type="range" min="0.15" max="2" step="0.05"></label><label>View distance <output id="distance-value">8 chunks</output><input id="distance" type="range" min="3" max="12" step="1"></label><label>Field of view <output id="fov-value">72°</output><input id="fov" type="range" min="55" max="100" step="1"></label></div><button id="creative-toggle" class="secondary-button">Switch to creative mode</button><div class="pause-bottom"><button id="pause-guide" class="text-button">Read the field guide ↗</button><button id="return-home" class="text-button">Save & return home</button></div><p class="quiet-note" id="settings-save-note">Changes save automatically.</p></section>
+    <section id="inventory-modal" class="modal inventory-panel" hidden aria-label="Inventory and crafting"><div class="modal-header"><div><span class="eyebrow">A FEW THINGS FOR THE JOURNEY</span><h2>Your satchel.</h2></div><button class="close-modal icon-button" aria-label="Close inventory"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="inventory-layout"><div class="inventory-left"><div class="section-label"><span>INVENTORY</span><span>Drag to arrange · click to select</span></div><div id="inventory-grid" class="inventory-grid"></div><div class="section-label"><span>QUICK ACCESS</span><span>1—9</span></div><div id="inventory-hotbar" class="inventory-grid inventory-hotbar"></div><div id="creative-catalog" hidden><div class="section-label"><span>CREATIVE PALETTE</span><span>Click to add</span></div><div id="catalog-grid" class="catalog-grid"></div></div><p id="inventory-description" class="inventory-description">Everything you need starts with a little exploring.</p></div><div class="crafting-panel"><div class="section-label"><span>MAKE SOMETHING</span><svg class="icon"><use href="#i-cube"/></svg></div><p>Simple recipes. Useful things.</p><div id="recipes"></div></div></div></section>
+    <section id="guide-modal" class="modal guide-panel" hidden aria-label="Field guide"><div class="modal-header"><div><span class="eyebrow">KEEP A LITTLE CURIOSITY</span><h2>The field guide.</h2></div><button class="close-modal icon-button" aria-label="Close guide"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="guide-tabs" role="tablist"><button class="active" data-guide="begin" role="tab" aria-selected="true">First steps</button><button data-guide="controls" role="tab" aria-selected="false">Find your feet</button><button data-guide="world" role="tab" aria-selected="false">Out in the world</button></div><div id="guide-content"></div><div class="guide-footer"><svg class="icon"><use href="#i-leaf"/></svg><span>There’s no right way to make this world yours.</span></div></section>
+    <section id="death-modal" class="modal death-panel" hidden aria-label="Respawn"><span class="eyebrow">EVERY PATH HAS A NEW BEGINNING</span><h2>Back to the clearing.</h2><p>Your builds and belongings are safe.<br>Take a breath, and try another path.</p><button id="respawn-button" class="primary-button">Start again <svg class="icon"><use href="#i-arrow"/></svg></button></section>
+  </div>
+  <noscript><div class="fatal-error">Wildwood needs JavaScript to grow its world. Enable JavaScript and reload to start exploring.</div></noscript>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
