@@ -1,0 +1,25 @@
+name: Free Automation Workflow
+
+# 1. Choose what triggers the script (e.g., pushing code to the main branch)
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # 2. Use 'ubuntu-latest' to ensure it stays in the free Linux tier
+    runs-on: ubuntu-latest
+
+    steps:
+    # 3. Pulls your repository code into the runner machine
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 4. Run standard terminal commands for free
+    - name: Run a free script
+      run: |
+        echo "Hello! This script ran completely for free."
+        
+    # Example step: Extracting a zip file in your repository
+    - name: Extract project files
+      run: unzip my-compressed-files.zip -d ./extracted-destination/
