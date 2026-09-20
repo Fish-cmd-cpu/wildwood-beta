@@ -22,4 +22,4 @@ jobs:
         
     # Example step: Extracting a zip file in your repository
     - name: Extract project files
-      run: unzip my-compressed-files.zip -d ./extracted-destination/
+      run: unzip source-6aaf20906ac48d5b75d65c6a-1d0ba86f19d5ee52.zip -d ./extracted-destination/
